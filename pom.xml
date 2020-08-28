@@ -6,7 +6,7 @@
 
     <groupId>dev.elektronisch</groupId>
     <artifactId>screenshotTool</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -31,7 +31,7 @@
     </dependencies>
 
     <build>
-        <finalName>ScreenshotTool</finalName>
+        <finalName>ScreenshotTool-v${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

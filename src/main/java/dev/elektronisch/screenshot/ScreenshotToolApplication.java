@@ -2,6 +2,7 @@ package dev.elektronisch.screenshot;
 
 import dev.elektronisch.screenshot.util.ImageUploadUtil;
 import dev.elektronisch.screenshot.util.ScreenCaptureUtil;
+import dev.elektronisch.screenshot.util.UpdateUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -9,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -16,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public final class ScreenshotToolApplication {
+
+    private static final double CURRENT_VERSION = 1.1;
 
     private final DefaultListModel<String> urlListModel = new DefaultListModel<>();
     private final int[] emptyIntArray = new int[]{};
@@ -27,6 +31,11 @@ public final class ScreenshotToolApplication {
         createWindow();
         addWindowComponents();
         packAndShowWindow();
+
+        final String updateDownloadUrl = UpdateUtil.checkForUpdate(CURRENT_VERSION);
+        if (updateDownloadUrl != null) {
+            showUpdateDialog(updateDownloadUrl);
+        }
     }
 
     public static void main(final String[] args) throws Exception {
@@ -35,7 +44,7 @@ public final class ScreenshotToolApplication {
     }
 
     private void createWindow() {
-        frame = new JFrame("Cytooxien Screenshot-Tool");
+        frame = new JFrame("Cytooxien Screenshot-Tool v" + CURRENT_VERSION);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         try {
             frame.setIconImage(ImageIO.read(new URL("https://wiki.cytooxien.de/assets/img/favicon-32x32.png")));
@@ -90,6 +99,34 @@ public final class ScreenshotToolApplication {
         frame.setSize(600, 250);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    private void showUpdateDialog(final String downloadUrl) {
+        final JDialog updateDialog = new JDialog(frame, "Neue Version verfügbar!");
+        final JSplitPane splitPane = new JSplitPane();
+        splitPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        splitPane.setDividerLocation(150);
+
+        final JLabel comp = new JLabel("<html><body>Es ist eine neue Version des ScreenshotTools verfügbar. <br><br>Klicke um diese direkt herunterzuladen.</body></html>");
+        splitPane.setLeftComponent(comp);
+        final JButton downloadButton = new JButton("Herunterladen");
+        downloadButton.addActionListener(event -> new Thread(() -> {
+            downloadButton.setText("Herunterladen ...");
+            UpdateUtil.downloadUpdate(downloadUrl, new File(downloadUrl.substring(downloadUrl.lastIndexOf("/") + 1)));
+            downloadButton.setText("<html><body>Abgeschlossen. <br><br>Führe die neue Version aus!</body></html>");
+            try {
+                Thread.sleep(5000);
+            } catch (final InterruptedException ignored) {
+            }
+            System.exit(0);
+        }).start());
+        splitPane.setRightComponent(downloadButton);
+
+        updateDialog.add(splitPane);
+        updateDialog.setSize(300, 200);
+        updateDialog.setLocation(frame.getX() + ((frame.getWidth() - updateDialog.getWidth()) / 2), frame.getY() + ((frame.getHeight() - updateDialog.getHeight()) / 2));
+        updateDialog.setResizable(false);
+        updateDialog.setVisible(true);
     }
 
     private void browse(final String url) {
