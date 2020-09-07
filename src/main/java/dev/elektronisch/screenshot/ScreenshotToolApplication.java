@@ -19,7 +19,7 @@ import java.util.Date;
 
 public final class ScreenshotToolApplication {
 
-    private static final double CURRENT_VERSION = 1.1;
+    private static final double CURRENT_VERSION = 1.2;
 
     private final DefaultListModel<String> urlListModel = new DefaultListModel<>();
     private final int[] emptyIntArray = new int[]{};
@@ -59,7 +59,7 @@ public final class ScreenshotToolApplication {
             frame.setVisible(false);
             try {
                 Thread.sleep(200);
-                final BufferedImage image = ScreenCaptureUtil.captureScreen();
+                final BufferedImage image = ScreenCaptureUtil.captureScreen(frame.getX(), frame.getY());
                 urlListModel.add(0, "Hochladen ...");
                 frame.setVisible(true);
 

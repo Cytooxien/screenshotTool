@@ -6,12 +6,12 @@ import java.awt.image.BufferedImage;
 public final class ScreenCaptureUtil {
 
     private static Robot robot;
-    private static Rectangle screenRectangle;
+    private static GraphicsEnvironment environment;
 
     static {
         try {
             robot = new Robot();
-            screenRectangle = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+            environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         } catch (final AWTException ignored) {
         }
     }
@@ -19,7 +19,12 @@ public final class ScreenCaptureUtil {
     private ScreenCaptureUtil() {
     }
 
-    public static BufferedImage captureScreen() {
-        return robot.createScreenCapture(screenRectangle);
+    public static BufferedImage captureScreen(final int x, final int y) {
+        for (final GraphicsDevice device : environment.getScreenDevices()) {
+            final GraphicsConfiguration configuration = device.getConfigurations()[0];
+            final Rectangle bounds = configuration.getBounds();
+            if (x >= bounds.getMinX() && x <= bounds.getMaxX()) return robot.createScreenCapture(bounds);
+        }
+        return null;
     }
 }
