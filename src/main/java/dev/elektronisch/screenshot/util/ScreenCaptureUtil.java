@@ -23,7 +23,8 @@ public final class ScreenCaptureUtil {
         for (final GraphicsDevice device : environment.getScreenDevices()) {
             final GraphicsConfiguration configuration = device.getConfigurations()[0];
             final Rectangle bounds = configuration.getBounds();
-            if (x >= bounds.getMinX() && x <= bounds.getMaxX()) return robot.createScreenCapture(bounds);
+            if (x >= bounds.getMinX() && x <= bounds.getMaxX() && y >= bounds.getMinY() && y <= bounds.getMaxY())
+                return robot.createScreenCapture(bounds);
         }
         return null;
     }
